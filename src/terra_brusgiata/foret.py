@@ -18,3 +18,18 @@ def creer_foret(hauteur : int, largeur : int, densite : int, rng):
     tirages = rng.random((hauteur, largeur))
     return np.where(tirages < densite, ARBRE, VIDE).astype(np.int8)
 
+
+def allumer(grille , ligne : int, colonne : int):
+    """Met le feu à la case (ligne, colonne) si elle porte un arbre.
+
+    Modifie la grille en place et ne renvoie rien.
+    """
+    if grille[ligne, colonne] == ARBRE:
+        grille[ligne, colonne] = FEU
+
+
+def allumer_bord_gauche(grille):
+    """Enflamme les arbres de la première colonne. Modifie la grille en place."""
+    colonne = grille[:, 0]
+    colonne[colonne == ARBRE] = FEU
+
