@@ -33,3 +33,12 @@ def allumer_bord_gauche(grille):
     colonne = grille[:, 0]
     colonne[colonne == ARBRE] = FEU
 
+
+def compter(grille):
+    """Renvoie le nombre de cases dans chaque état, sous forme de dictionnaire."""
+    return {
+        nom: int(np.count_nonzero(grille == etat))
+        for etat, nom in NOMS_ETATS.items()
+    }
+
+
