@@ -11,6 +11,8 @@ NOMS_ETATS = {
     FEU: "feu",
     CENDRE: "cendre"
 }
+
+DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]   # haut, bas, gauche, droite
  
  
 def creer_foret(hauteur : int, largeur : int, densite : int, rng):
@@ -40,5 +42,15 @@ def compter(grille):
         nom: int(np.count_nonzero(grille == etat))
         for etat, nom in NOMS_ETATS.items()
     }
+
+
+def voisins(ligne: int, colonne: int, hauteur: int, largeur: int) -> list[tuple[int, int]]:
+    """Renvoie la liste des coordonnées des voisines existantes (von Neumann)."""
+    resultat = []
+    for dl, dc in DIRECTIONS:
+        l, c = ligne + dl, colonne + dc
+        if 0 <= l < hauteur and 0 <= c < largeur:
+            resultat.append((l, c))
+    return resultat
 
 
