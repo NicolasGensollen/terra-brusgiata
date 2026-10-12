@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
- 
+from matplotlib.patches import Patch
+
+
 COULEURS = ["#d9c7a3", "#2e8b3a", "#ff7a00", "#3a3a3a"]   # vide, arbre, feu, cendre
 NOMS = ["Vide", "Arbre", "Feu", "Cendre"]
 CMAP = ListedColormap(COULEURS)
@@ -19,6 +21,13 @@ def afficher(grille, titre : str =""):
     """Affiche une grille dans une nouvelle figure."""
     fig, ax = plt.subplots()
     dessiner(ax, grille, titre)
+    legende(ax)
     plt.show()
+
+
+def legende(ax):
+    """Ajoute à ax une légende avec la couleur de chaque état."""
+    poignees = [Patch(color=c, label=n) for c, n in zip(COULEURS, NOMS)]
+    ax.legend(handles=poignees, loc="upper right", fontsize=8)
 
 
