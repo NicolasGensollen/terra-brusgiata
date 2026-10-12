@@ -70,3 +70,15 @@ def etape_deterministe(grille):
     return nouvelle
 
 
+def simuler_deterministe(grille):
+    """Applique des étapes jusqu'à extinction.
+
+    Renvoie (grille finale, nombre de tours).
+    """
+    tours = 0
+    while np.any(grille == FEU):
+        grille = etape_deterministe(grille)
+        tours += 1
+    return grille, tours
+
+
