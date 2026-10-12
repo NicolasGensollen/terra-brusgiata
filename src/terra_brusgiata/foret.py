@@ -54,3 +54,19 @@ def voisins(ligne: int, colonne: int, hauteur: int, largeur: int) -> list[tuple[
     return resultat
 
 
+def etape_deterministe(grille):
+    """Renvoie la grille du tour suivant (propagation certaine)."""
+    hauteur, largeur = grille.shape
+    nouvelle = grille.copy()
+    for ligne in range(hauteur):
+        for colonne in range(largeur):
+            if grille[ligne, colonne] == FEU:
+                nouvelle[ligne, colonne] = CENDRE
+            elif grille[ligne, colonne] == ARBRE:
+                for ligne_voisin, colonne_voisin in voisins(ligne, colonne, hauteur, largeur):
+                    if grille[ligne_voisin, colonne_voisin] == FEU:
+                        nouvelle[ligne, colonne] = FEU
+                        break
+    return nouvelle
+
+
