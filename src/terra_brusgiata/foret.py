@@ -104,6 +104,8 @@ def etape(etat: dict, rng, p_base: float = 0.6) -> None:
     """
     grille = etat["grille"]
     hauteur, largeur = grille.shape
+    vy, vx = etat["vent"]
+    f = etat["force_vent"]
     nouvelle = grille.copy()
     for l, c in np.argwhere(grille == FEU):
         nouvelle[l, c] = CENDRE
@@ -111,7 +113,10 @@ def etape(etat: dict, rng, p_base: float = 0.6) -> None:
             # grille[...] == ARBRE : la cible était un arbre au début du tour
             # nouvelle[...] == ARBRE : pas déjà enflammée pendant ce tour
             if grille[vl, vc] == ARBRE and nouvelle[vl, vc] == ARBRE:
+                dy, dx = vl - l, vc - c
+                facteur_vent = 1 + f * (dy * vy + dx * vx)
                 p = p_base * (1 - etat["humidite"][vl, vc])
+                p = min(1.0, max(0.0, p * facteur_vent))
                 if rng.random() < p:
                     nouvelle[vl, vc] = FEU
     etat["grille"] = nouvelle
@@ -157,4 +162,13 @@ def humidite_riviere(forme: tuple[int, int], colonne: int, largeur_zone: int) ->
         profil = np.zeros(largeur)
     return np.tile(profil, (hauteur, 1))
 
+
+def vent_depuis_angle(angle_degres):
+    """Vecteur unitaire (dy, dx) du vent qui souffle VERS la direction donnée.
+
+    0° = vers la droite (est), 90° = vers le haut (nord). L'axe des lignes
+    étant orienté vers le bas, « vers le haut » donne un dy négatif.
+    """
+    a = math.radians(angle_degres)
+    return (-math.sin(a), math.cos(a))
 
