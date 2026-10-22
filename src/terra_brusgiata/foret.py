@@ -97,3 +97,23 @@ def creer_etat(grille: np.ndarray) -> dict:
     }
 
 
+def etape(etat: dict, rng, p_base: float = 0.6) -> None:
+    """Fait avancer la simulation d'un tour.
+
+    Modifie etat en place : remplace etat["grille"] et incrémente etat["tour"].
+    """
+    grille = etat["grille"]
+    hauteur, largeur = grille.shape
+    nouvelle = grille.copy()
+    for l, c in np.argwhere(grille == FEU):
+        nouvelle[l, c] = CENDRE
+        for vl, vc in voisins(l, c, hauteur, largeur):
+            # grille[...] == ARBRE : la cible était un arbre au début du tour
+            # nouvelle[...] == ARBRE : pas déjà enflammée pendant ce tour
+            if grille[vl, vc] == ARBRE and nouvelle[vl, vc] == ARBRE:
+                if rng.random() < p_base:
+                    nouvelle[vl, vc] = FEU
+    etat["grille"] = nouvelle
+    etat["tour"] += 1
+
+
