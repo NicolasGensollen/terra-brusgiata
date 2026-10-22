@@ -62,3 +62,14 @@ def animer(historique: list[np.ndarray], intervalle: int = 50):
     )
     plt.show()
     return animation
+
+
+def afficher_humidite(grille, humidite):
+    """Affiche la forêt et la carte d'humidité côte à côte."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+    dessiner(ax1, grille, "Forêt")
+    image = ax2.imshow(humidite, cmap="Blues", vmin=0, vmax=1)
+    ax2.set_title("Humidité")
+    fig.colorbar(image, ax=ax2)
+    plt.show()
+
