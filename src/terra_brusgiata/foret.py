@@ -111,7 +111,8 @@ def etape(etat: dict, rng, p_base: float = 0.6) -> None:
             # grille[...] == ARBRE : la cible était un arbre au début du tour
             # nouvelle[...] == ARBRE : pas déjà enflammée pendant ce tour
             if grille[vl, vc] == ARBRE and nouvelle[vl, vc] == ARBRE:
-                if rng.random() < p_base:
+                p = p_base * (1 - etat["humidite"][vl, vc])
+                if rng.random() < p:
                     nouvelle[vl, vc] = FEU
     etat["grille"] = nouvelle
     etat["tour"] += 1
