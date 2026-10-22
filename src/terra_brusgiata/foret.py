@@ -70,7 +70,7 @@ def etape_deterministe(grille):
     return nouvelle
 
 
-def simuler_deterministe(grille):
+def simuler_deterministe(grille: np.ndarray) -> tuple[np.ndarray, int]:
     """Applique des étapes jusqu'à extinction.
 
     Renvoie (grille finale, nombre de tours).
@@ -80,5 +80,20 @@ def simuler_deterministe(grille):
         grille = etape_deterministe(grille)
         tours += 1
     return grille, tours
+
+
+def creer_etat(grille: np.ndarray) -> dict:
+    """Construit le dictionnaire d'état de la simulation.
+ 
+    L'humidité et le vent ont des valeurs neutres : ils n'ont aucun effet
+    sur la propagation tant que les parties 5 et 6 ne les utilisent pas.
+    """
+    return {
+        "grille": grille,
+        "humidite": np.zeros(grille.shape),   # sol parfaitement sec partout
+        "vent": (0.0, 0.0),                   # pas de direction de vent
+        "force_vent": 0.0,                    # vent nul
+        "tour": 0,                            # la simulation n'a pas commencé
+    }
 
 
