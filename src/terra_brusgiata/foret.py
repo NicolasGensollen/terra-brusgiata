@@ -117,3 +117,12 @@ def etape(etat: dict, rng, p_base: float = 0.6) -> None:
     etat["tour"] += 1
 
 
+def simuler(etat: dict, rng, p_base: float = 0.6, max_tours: int = 1000) -> list[np.ndarray]:
+    """Simule jusqu'à extinction (ou max_tours). Renvoie la liste des grilles."""
+    historique = [etat["grille"].copy()]
+    while np.any(etat["grille"] == FEU) and etat["tour"] < max_tours:
+        etape(etat, rng, p_base)
+        historique.append(etat["grille"].copy())
+    return historique
+
+
