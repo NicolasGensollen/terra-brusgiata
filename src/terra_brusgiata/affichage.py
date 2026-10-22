@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from matplotlib.patches import Patch
 from .foret import creer_foret
+from matplotlib.animation import FuncAnimation
 
 
 COULEURS = ["#d9c7a3", "#2e8b3a", "#ff7a00", "#3a3a3a"]   # vide, arbre, feu, cendre
@@ -42,3 +43,22 @@ def comparer_densites(densites, graine: int = 0, taille: int = 100):
     plt.show()
 
 
+def animer(historique: list[np.ndarray], intervalle: int = 50):
+    """Rejoue un historique de grilles.
+
+    Renvoie l'animation, qu'il faut garder dans une variable.
+    """
+    fig, ax = plt.subplots()
+    image = dessiner(ax, historique[0], "Tour 0")
+    legende(ax)
+
+    def mise_a_jour(i):
+        image.set_data(historique[i])
+        ax.set_title(f"Tour {i}")
+        return [image]
+
+    animation = FuncAnimation(
+        fig, mise_a_jour, frames=len(historique), interval=intervalle
+    )
+    plt.show()
+    return animation
