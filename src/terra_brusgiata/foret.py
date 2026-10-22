@@ -127,3 +127,34 @@ def simuler(etat: dict, rng, p_base: float = 0.6, max_tours: int = 1000) -> list
     return historique
 
 
+def humidite_uniforme(forme: tuple[int, int], valeur: float) -> np.ndarray:
+    """Même humidité partout."""
+    return np.full(forme, float(valeur))
+
+
+def humidite_aleatoire(forme: tuple[int, int], maxi: float, rng) -> np.ndarray:
+    """Humidité tirée uniformément entre 0 et maxi pour chaque case."""
+    return rng.random(forme) * maxi
+
+
+HUMIDITE_RIVE = 0.8   # humidité maximale, au bord de l'eau
+
+
+def humidite_riviere(forme: tuple[int, int], colonne: int, largeur_zone: int) -> np.ndarray:
+    """Bande humide verticale centrée sur colonne : humidité HUMIDITE_RIVE au
+    bord de l'eau, décroissant linéairement jusqu'à 0 à une distance
+    largeur_zone.
+
+    forme : forme de la grille (hauteur, largeur)
+    colonne : position de la rivière
+    largeur_zone : La distance, en cases, à laquelle l'humidité tombe à zéro.
+    """
+    hauteur, largeur = forme
+    distances = np.abs(np.arange(largeur) - colonne)
+    if largeur_zone > 0:
+        profil = HUMIDITE_RIVE * np.clip(1 - distances / largeur_zone, 0, 1)
+    else:
+        profil = np.zeros(largeur)
+    return np.tile(profil, (hauteur, 1))
+
+
