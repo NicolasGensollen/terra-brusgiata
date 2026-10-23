@@ -5,12 +5,41 @@ VIDE = 0
 ARBRE = 1
 FEU = 2
 CENDRE = 3
- 
+
+# Types de végétation
+EAU = 0
+ROCHE = 1
+ROUTE = 2
+PRAIRIE = 3
+MAQUIS = 4
+FORET = 5
+HABITATION = 6
+
 NOMS_ETATS = {
     VIDE: "vide",
     ARBRE: "arbre", 
     FEU: "feu",
     CENDRE: "cendre"
+}
+
+NOMS_TYPES = {
+    EAU: "eau",
+    ROCHE: "roche",
+    ROUTE: "route",
+    PRAIRIE: "prairie",
+    MAQUIS: "maquis",
+    FORET: "forêt",
+    HABITATION: "habitation"
+}
+
+INFLAMMABILITE = {
+    EAU: 0.0,
+    ROCHE: 0.0,
+    ROUTE: 0.0,
+    PRAIRIE: 0.7,
+    MAQUIS: 1.3,
+    FORET: 1.0,
+    HABITATION: 0.4
 }
 
 DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]   # haut, bas, gauche, droite
