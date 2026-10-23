@@ -44,7 +44,8 @@ INFLAMMABILITE = {
 
 DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]   # haut, bas, gauche, droite
  
- 
+COEF_PENTE = 0.078   # par degré de pente
+
 def creer_foret(hauteur : int, largeur : int, densite : int, rng):
     """Renvoie une grille où chaque case est ARBRE avec une probabilité densite, VIDE sinon."""
     tirages = rng.random((hauteur, largeur))
@@ -215,4 +216,11 @@ def simuler_vent_variable(etat: dict, rng, vent_au_tour, p_base: float = 0.6, ma
         etape(etat, rng, p_base)
         historique.append(etat["grille"].copy())
     return historique
+
+
+def facteur_pente(dz: float, taille_case: int) -> float:
+    """Facteur multiplicatif dû à la pente, pour une montée de dz mètres
+    sur une distance horizontale taille_case (descente si dz < 0)."""
+    angle = math.degrees(math.atan(dz / taille_case))
+    return math.exp(COEF_PENTE * angle)
 
