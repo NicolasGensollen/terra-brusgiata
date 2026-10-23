@@ -59,3 +59,20 @@ def ecrire_vegetation(chemin: str, vegetation: np.ndarray, taille_case: int, tit
         fichier.write(f"# taille_case = {taille_case}\n")
         for ligne in vegetation:
             fichier.write("".join(TYPES_VERS_SYMBOLES[t] for t in ligne) + "\n")
+
+
+def chemin_altitude(chemin: str) -> str:
+    """carte.txt -> carte_altitude.csv"""
+    base, _ = os.path.splitext(chemin)
+    return base + "_altitude.csv"
+
+
+def lire_altitude(chemin: str) -> np.ndarray:
+    """Lit un fichier de relief CSV."""
+    return np.loadtxt(chemin, delimiter=",", ndmin=2)
+
+
+def ecrire_altitude(chemin: str, altitude: np.ndarray) -> None:
+    """Écrit un relief au format CSV, avec une décimale."""
+    np.savetxt(chemin, altitude, delimiter=",", fmt="%.1f")
+
