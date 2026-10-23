@@ -50,3 +50,12 @@ def lire_vegetation(chemin):
         raise ValueError(f"{chemin} : taille_case manquante")
     return np.array(lignes, dtype=np.int8), taille_case
 
+
+def ecrire_vegetation(chemin: str, vegetation: np.ndarray, taille_case: int, titre: str = ""):
+    """Écrit une carte de végétation au format texte."""
+    with open(chemin, "w", encoding="utf-8") as fichier:
+        if titre:
+            fichier.write(f"# {titre}\n")
+        fichier.write(f"# taille_case = {taille_case}\n")
+        for ligne in vegetation:
+            fichier.write("".join(TYPES_VERS_SYMBOLES[t] for t in ligne) + "\n")
