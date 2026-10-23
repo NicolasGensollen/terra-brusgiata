@@ -109,3 +109,21 @@ def test_nombre_de_cases_constant():
     historique = simuler(creer_etat(grille), np.random.default_rng(5))
     assert all(sum(compter(g).values()) == grille.size for g in historique)
 
+
+def test_grille_une_case():
+    grille = np.array([[FEU]])
+    historique = simuler(creer_etat(grille), np.random.default_rng(0))
+    assert historique[-1][0, 0] == CENDRE and len(historique) == 2
+
+
+def test_foret_sans_arbre():
+    grille = creer_foret(10, 10, 0.0, np.random.default_rng(0))
+    allumer_bord_gauche(grille)
+    historique = simuler(creer_etat(grille), np.random.default_rng(0))
+    assert len(historique) == 1 and compter(grille)["vide"] == 100
+
+
+def test_densite_extremes():
+    rng = np.random.default_rng(0)
+    assert np.all(creer_foret(10, 10, 1.0, rng) == ARBRE)
+    assert np.all(creer_foret(10, 10, 0.0, rng) == VIDE)
