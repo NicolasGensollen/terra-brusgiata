@@ -112,22 +112,30 @@ def legende_terrain(ax):
     )
 
 
-def dessiner_terrain(ax, grille: np.ndarray, vegetation: np.ndarray, titre: str = ""):
+def dessiner_terrain(ax, grille: np.ndarray, vegetation: np.ndarray, titre: str = "", altitude=None):
     """Dessine le terrain dans ax et renvoie l'image créée."""
     image = ax.imshow(
         image_terrain(grille, vegetation),
         interpolation="nearest"
     )
+    if altitude is not None and altitude.max() > altitude.min():
+        ax.contour(
+            altitude,
+            levels=10,
+            colors="black",
+            linewidths=0.4,
+            alpha=0.6
+        )
     ax.set_title(titre)
     ax.set_xticks([])
     ax.set_yticks([])
     return image
 
 
-def animer_terrain(historique: list[np.ndarray], vegetation: np.ndarray, intervalle: int = 50):
+def animer_terrain(historique: list[np.ndarray], vegetation: np.ndarray, intervalle: int = 50, altitude=None):
     """Rejoue un historique sur le terrain. Renvoie l'animation."""
     fig, ax = plt.subplots(figsize=(9, 6))
-    image = dessiner_terrain(ax, historique[0], vegetation, "Tour 0")
+    image = dessiner_terrain(ax, historique[0], vegetation, "Tour 0", altitude)
     legende_terrain(ax)
     fig.tight_layout()
 
@@ -140,4 +148,14 @@ def animer_terrain(historique: list[np.ndarray], vegetation: np.ndarray, interva
                               interval=intervalle, repeat=False)
     plt.show()
     return animation
+
+
+def afficher_relief(altitude, titre="Relief"):
+    """Affiche le relief en couleurs, avec courbes de niveau et barre d'échelle."""
+    fig, ax = plt.subplots()
+    image = ax.imshow(altitude, cmap="terrain")
+    ax.contour(altitude, levels=10, colors="black", linewidths=0.4)
+    ax.set_title(titre)
+    fig.colorbar(image, ax=ax, label="altitude (m)")
+    plt.show()
 
