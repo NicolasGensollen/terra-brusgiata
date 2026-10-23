@@ -85,3 +85,23 @@ def test_peindre_aux_bords():
     assert np.count_nonzero(vegetation == EAU) == 4      # carré 2 × 2 dans le coin
     assert np.count_nonzero(vegetation == ROCHE) == 9    # carré 3 × 3 dans le coin
 
+
+def route_et_feu(cases_route):
+    vegetation = np.full((30, 30), MAQUIS, dtype=np.int8)
+    for case in cases_route:
+        vegetation[case] = ROUTE
+    etat = creer_etat_terrain(vegetation, np.zeros(vegetation.shape), 100.0)
+    etat["grille"][29, 0] = FEU                  # coin en bas à gauche
+    return simuler(etat, np.random.default_rng(0), p_base=1.0)[-1]
+
+
+def test_route_droite_arrete_le_feu():
+    fin = route_et_feu([(15, c) for c in range(30)])
+    assert np.all(fin[:15] == ARBRE)             # rien au-dessus de la route
+
+
+def test_route_diagonale_arrete_le_feu():
+    fin = route_et_feu([(i, i) for i in range(30)])
+    lignes, colonnes = np.triu_indices(30, 1)    # cases au-dessus de la diagonale
+    assert np.all(fin[lignes, colonnes] == ARBRE)
+
