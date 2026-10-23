@@ -70,3 +70,16 @@ def editer_carte(vegetation):
     plt.show()
     return vegetation
 
+def main():
+    chemin = sys.argv[1]
+    if os.path.exists(chemin):
+        vegetation, taille_case = lire_vegetation(chemin)
+    else:
+        hauteur = int(input("Nombre de lignes : "))
+        largeur = int(input("Nombre de colonnes : "))
+        taille_case = float(input("Taille d'une case (m) : "))
+        vegetation = np.full((hauteur, largeur), FORET, dtype=np.int8)
+    vegetation = editer_carte(vegetation)
+    ecrire_vegetation(chemin, vegetation, taille_case)
+    print(f"Carte sauvegardée dans {chemin}")
+
