@@ -18,3 +18,35 @@ SYMBOLES = {
 TYPES_VERS_SYMBOLES = {t: s for s, t in SYMBOLES.items()}
 
 
+def lire_vegetation(chemin):
+    """Lit un fichier de carte. Renvoie (vegetation, taille_case)."""
+    taille_case = None
+    lignes = []
+    with open(chemin, encoding="utf-8") as fichier:
+        for numero, ligne in enumerate(fichier, start=1):
+            ligne = ligne.rstrip("\n")
+            if ligne.startswith("#"):
+                commentaire = ligne[1:].strip()
+                if commentaire.startswith("taille_case"):
+                    taille_case = float(commentaire.split("=")[1])
+                continue
+            if ligne.strip() == "":
+                continue
+            types = []
+            for colonne, symbole in enumerate(ligne, start=1):
+                if symbole not in SYMBOLES:
+                    raise ValueError(
+                        f"{chemin}, ligne {numero}, colonne {colonne} : "
+                        f"symbole inconnu {symbole!r}"
+                    )
+                types.append(SYMBOLES[symbole])
+            if lignes and len(types) != len(lignes[0]):
+                raise ValueError(
+                    f"{chemin}, ligne {numero} : {len(types)} cases "
+                    f"au lieu de {len(lignes[0])}"
+                )
+            lignes.append(types)
+    if taille_case is None:
+        raise ValueError(f"{chemin} : taille_case manquante")
+    return np.array(lignes, dtype=np.int8), taille_case
+
