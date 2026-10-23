@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
  
-from foret import (
+from .foret import (
     ARBRE,
     CENDRE,
     FEU,
@@ -51,5 +51,22 @@ def experience(
         )
         proportions.append(bilan(historique)["proportion_brulee"])
     return float(np.mean(proportions)), float(np.std(proportions))
+
+
+def courbe_percolation(
+    taille: int = 100,
+    n_repetitions: int = 30,
+    graine: int = 2026
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Proportion brûlée en fonction de la densité."""
+    densites = np.arange(0, 1.0001, 0.02)
+    moyennes, ecarts = [], []
+    for d in densites:
+        print(f"--> Simulating for d={d}...")
+        m, e = experience(d, n_repetitions, graine, taille)
+        moyennes.append(m)
+        ecarts.append(e)
+    return densites, np.array(moyennes), np.array(ecarts)
+
 
 
