@@ -151,6 +151,8 @@ def etape(etat: dict, rng, p_base: float = 0.6) -> None:
                 facteur_vent = 1 + f * (dy * vy + dx * vx)
                 p = p_base * (1 - etat["humidite"][vl, vc])
                 p = p * INFLAMMABILITE[etat["vegetation"][vl, vc]] 
+                dz = etat["altitude"][vl, vc] - etat["altitude"][l, c]
+                p = p * facteur_pente(dz, etat["taille_case"])
                 p = min(1.0, max(0.0, p * facteur_vent))
                 if rng.random() < p:
                     nouvelle[vl, vc] = FEU
