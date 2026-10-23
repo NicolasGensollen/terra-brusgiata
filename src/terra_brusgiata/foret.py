@@ -120,10 +120,13 @@ def creer_etat(grille: np.ndarray) -> dict:
     """
     return {
         "grille": grille,
-        "humidite": np.zeros(grille.shape),   # sol parfaitement sec partout
-        "vent": (0.0, 0.0),                   # pas de direction de vent
-        "force_vent": 0.0,                    # vent nul
-        "tour": 0,                            # la simulation n'a pas commencé
+        "humidite": np.zeros(grille.shape),           # sol parfaitement sec partout
+        "vent": (0.0, 0.0),                           # pas de direction de vent
+        "force_vent": 0.0,                            # vent nul
+        "vegetation": np.full(grille.shape, FORET),
+        "altitude": np.zeros(grille.shape),           # terrain plat
+        "taille_case": 1.0,
+        "tour": 0,                                    # la simulation n'a pas commencé
     }
 
 
