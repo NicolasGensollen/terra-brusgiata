@@ -173,3 +173,13 @@ def vent_depuis_angle(angle_degres):
     a = math.radians(angle_degres)
     return (-math.sin(a), math.cos(a))
 
+
+def simuler_vent_variable(etat: dict, rng, vent_au_tour, p_base: float = 0.6, max_tours: int = 1000):
+    """Comme simuler, mais le vent est recalculé à chaque tour par vent_au_tour(tour)."""
+    historique = [etat["grille"].copy()]
+    while np.any(etat["grille"] == FEU) and etat["tour"] < max_tours:
+        etat["vent"] = vent_au_tour(etat["tour"])
+        etape(etat, rng, p_base)
+        historique.append(etat["grille"].copy())
+    return historique
+
