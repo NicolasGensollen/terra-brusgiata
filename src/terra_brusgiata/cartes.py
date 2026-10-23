@@ -76,3 +76,22 @@ def ecrire_altitude(chemin: str, altitude: np.ndarray) -> None:
     """Écrit un relief au format CSV, avec une décimale."""
     np.savetxt(chemin, altitude, delimiter=",", fmt="%.1f")
 
+def charger_carte(chemin):
+    """Charge une carte et son relief s'il existe, et renvoie un état prêt
+    à simuler."""
+    vegetation, taille_case = lire_vegetation(chemin)
+    if os.path.exists(chemin_altitude(chemin)):
+        altitude = lire_altitude(chemin_altitude(chemin))
+        if altitude.shape != vegetation.shape:
+            raise ValueError(f"relief de forme {altitude.shape}, "
+                             f"carte de forme {vegetation.shape}")
+    else:
+        altitude = np.zeros(vegetation.shape)
+    return creer_etat_terrain(vegetation, altitude, taille_case)
+
+
+def sauvegarder_carte(chemin, etat, titre=""):
+    """Sauvegarde la végétation et le relief d'un état."""
+    ecrire_vegetation(chemin, etat["vegetation"], etat["taille_case"], titre)
+    ecrire_altitude(chemin_altitude(chemin), etat["altitude"])
+
