@@ -44,3 +44,24 @@ def plan_incline(forme, pente_degres, taille_case):
     lignes = np.arange(forme[0])[:, np.newaxis]
     return np.tile((forme[0] - 1 - lignes) * denivele_par_case, (1, forme[1]))
 
+
+def lisser(altitude: np.ndarray) -> np.ndarray:
+    """Remplace chaque case par la moyenne d'elle-même et de ses 4 voisines."""
+    bord = np.pad(altitude, 1, mode="edge")      # recopie les bords
+    return (
+        bord[1:-1, 1:-1] + 
+        bord[:-2, 1:-1] + 
+        bord[2:, 1:-1] + 
+        bord[1:-1, :-2] + 
+        bord[1:-1, 2:]
+    ) / 5
+
+
+def relief_aleatoire(forme: tuple[int, int], amplitude, n_lissages: int, rng):
+    """Relief aléatoire : bruit lissé n_lissages fois, puis ramené entre 0 et amplitude."""
+    altitude = rng.random(forme)
+    for _ in range(n_lissages):
+        altitude = lisser(altitude)
+    altitude = altitude - altitude.min()
+    return amplitude * altitude / altitude.max()
+
