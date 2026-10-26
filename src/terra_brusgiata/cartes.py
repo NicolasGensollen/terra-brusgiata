@@ -2,7 +2,7 @@ import os
  
 import numpy as np
  
-from .foret import EAU, FORET, HABITATION, MAQUIS, PRAIRIE, ROCHE, ROUTE
+from .foret import EAU, FORET, HABITATION, MAQUIS, PRAIRIE, ROCHE, ROUTE, PAREFEU
 from .terrain import creer_etat_terrain
  
 SYMBOLES = {
@@ -12,7 +12,8 @@ SYMBOLES = {
     ".": PRAIRIE,
     "m": MAQUIS,
     "T": FORET,
-    "H": HABITATION
+    "H": HABITATION,
+    "#": PAREFEU
 }
 
 TYPES_VERS_SYMBOLES = {t: s for s, t in SYMBOLES.items()}

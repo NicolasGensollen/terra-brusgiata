@@ -14,6 +14,7 @@ PRAIRIE = 3
 MAQUIS = 4
 FORET = 5
 HABITATION = 6
+PAREFEU = 7 
 
 NOMS_ETATS = {
     VIDE: "vide",
@@ -29,7 +30,8 @@ NOMS_TYPES = {
     PRAIRIE: "prairie",
     MAQUIS: "maquis",
     FORET: "forêt",
-    HABITATION: "habitation"
+    HABITATION: "habitation",
+    PAREFEU: "pare-feu"
 }
 
 INFLAMMABILITE = {
@@ -39,7 +41,8 @@ INFLAMMABILITE = {
     PRAIRIE: 0.7,
     MAQUIS: 1.3,
     FORET: 1.0,
-    HABITATION: 0.4
+    HABITATION: 0.4,
+    PAREFEU: 0.0
 }
 
 DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]   # haut, bas, gauche, droite

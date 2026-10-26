@@ -18,6 +18,7 @@ COULEURS_TYPES = np.array([
     [0.48, 0.60, 0.23],   # maquis
     [0.12, 0.42, 0.18],   # forêt
     [0.85, 0.33, 0.31],   # habitation
+    [0.80, 0.66, 0.47],   # pare-feu
 ])
 COULEUR_FEU = np.array([1.0, 0.48, 0.0])
 COULEUR_CENDRE = np.array([0.15, 0.15, 0.15])
