@@ -153,3 +153,23 @@ def score(etat: dict) -> int:
                + POIDS_HABITATION * np.count_nonzero(intact & maisons))
 
 
+def zone_autour_du_feu(grille: np.ndarray, rayon: int) -> np.ndarray:
+    """Masque des cases situées à au plus rayon cases d'une case en feu,
+    diagonales comprises."""
+    zone = grille == FEU
+    for _ in range(rayon):
+        bord = np.pad(zone, 1)
+        zone = (
+            bord[1:-1, 1:-1] | 
+            bord[:-2, 1:-1] | 
+            bord[2:, 1:-1] | 
+            bord[1:-1, :-2] | 
+            bord[1:-1, 2:] | 
+            bord[:-2, :-2] | 
+            bord[:-2, 2:] | 
+            bord[2:, :-2] | 
+            bord[2:, 2:]
+        )
+    return zone
+
+
