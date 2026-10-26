@@ -1,7 +1,8 @@
 import copy
 import os
 import time
- 
+import csv
+
 import numpy as np
  
 from .jeu import jouer, ne_rien_faire, score, Strategie
@@ -74,4 +75,11 @@ def evaluer(strategie: Strategie, scenarios: dict, graines: list[int], reference
             )
     return lignes
 
+
+def exporter_csv(lignes: list[dict], chemin: str) -> None:
+    """Écrit les lignes de résultats dans un fichier CSV."""
+    with open(chemin, "w", newline="", encoding="utf-8") as fichier:
+        ecrivain = csv.DictWriter(fichier, fieldnames=list(lignes[0].keys()))
+        ecrivain.writeheader()
+        ecrivain.writerows(lignes)
 
