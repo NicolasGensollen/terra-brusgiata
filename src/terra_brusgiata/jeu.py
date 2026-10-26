@@ -1,6 +1,6 @@
 import numpy as np
  
-from .foret import ARBRE, FEU, HABITATION, PAREFEU, VIDE
+from .foret import ARBRE, FEU, HABITATION, PAREFEU, VIDE, etape
  
 
 REGLES = {
@@ -15,6 +15,9 @@ DISTANCE_SECURITE = 3        # distance minimale au feu pour creuser un pare-feu
 EVAPORATION = 0.1            # part de l'humidité ajoutée évaporée à chaque tour
 POIDS_HABITATION = 20
 
+Action = tuple[str, int, int]
+Strategie = list[Action]
+
 
 def feu_a_proximite(grille: np.ndarray, ligne: int, colonne: int, rayon: int) -> bool:
     """Vrai s'il y a une case en feu à moins de rayon cases, diagonales comprises."""
@@ -23,7 +26,7 @@ def feu_a_proximite(grille: np.ndarray, ligne: int, colonne: int, rayon: int) ->
     return bool(np.any(fenetre == FEU))
 
 
-def valider_action(etat: dict, action: tuple[str, int, int], budget: int) -> str | None:
+def valider_action(etat: dict, action: Action, budget: int) -> str | None:
     """Renvoie None si l'action est permise, sinon un message expliquant la raison du refus."""
     if not (isinstance(action, tuple) and len(action) == 3):
         return f"action mal formée : {action!r}"
@@ -57,7 +60,7 @@ def valider_action(etat: dict, action: tuple[str, int, int], budget: int) -> str
     return None
 
 
-def appliquer_action(etat: dict, action: tuple[str, int, int]) -> None:
+def appliquer_action(etat: dict, action: Action) -> None:
     """Applique une action supposée valide. Modifie etat en place."""
     nom, ligne, colonne = action
     if nom == "parefeu":
@@ -72,4 +75,53 @@ def appliquer_action(etat: dict, action: tuple[str, int, int]) -> None:
     elif nom == "protection":
         etat["protection"][ligne, colonne] = REGLES["protection"]["duree"]
 
+
+
+def ne_rien_faire(etat: dict, budget: int, tour: int) -> Strategie:
+    """Stratégie de référence : aucune intervention."""
+    return []
+
+
+def jouer(
+    etat: dict,
+    strategie: Strategie,
+    rng,
+    budget: int,
+    p_base: float = 0.6,
+    max_tours: int = 1000
+) -> dict:
+    """Joue une partie complète. Modifie etat en place et renvoie le résultat."""
+    humidite_base = etat["humidite"].copy()
+    resultat = {
+        "historique": [etat["grille"].copy()],
+        "vegetations": [etat["vegetation"].copy()],
+        "humidites": [etat["humidite"].copy()],
+        "budgets": [budget],
+        "journal": []
+    }
+    journal = resultat["journal"]
+    while np.any(etat["grille"] == FEU) and etat["tour"] < max_tours:
+        tour = etat["tour"]
+        actions = strategie(etat, budget, tour)
+        for numero, action in enumerate(actions):
+            if numero >= MAX_ACTIONS_PAR_TOUR:
+                raison = f"plus de {MAX_ACTIONS_PAR_TOUR} actions dans le tour"
+            else:
+                raison = valider_action(etat, action, budget)
+            if raison is None:
+                appliquer_action(etat, action)
+                budget -= REGLES[action[0]]["cout"]
+                journal.append((tour, action, "ok"))
+            else:
+                journal.append((tour, action, raison))
+        etape(etat, rng, p_base)
+        ajoute = etat["humidite"] - humidite_base
+        etat["humidite"] = humidite_base + ajoute * (1 - EVAPORATION)
+        etat["protection"] = np.maximum(etat["protection"] - 1, 0)
+        resultat["historique"].append(etat["grille"].copy())
+        resultat["vegetations"].append(etat["vegetation"].copy())
+        resultat["humidites"].append(etat["humidite"].copy())
+        resultat["budgets"].append(budget)
+    resultat["budget_restant"] = budget
+    return resultat
 
