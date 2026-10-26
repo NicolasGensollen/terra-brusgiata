@@ -1,3 +1,4 @@
+import copy
 import numpy as np
  
 from .foret import ARBRE, FEU, HABITATION, PAREFEU, VIDE, etape
@@ -102,7 +103,13 @@ def jouer(
     journal = resultat["journal"]
     while np.any(etat["grille"] == FEU) and etat["tour"] < max_tours:
         tour = etat["tour"]
-        actions = strategie(etat, budget, tour)
+        try:
+            actions = list(
+                strategie(copy.deepcopy(etat), budget, tour)
+            )
+        except Exception as erreur:
+            journal.append((tour, None, f"erreur de la stratégie : {erreur}"))
+            actions = []
         for numero, action in enumerate(actions):
             if numero >= MAX_ACTIONS_PAR_TOUR:
                 raison = f"plus de {MAX_ACTIONS_PAR_TOUR} actions dans le tour"
