@@ -23,7 +23,7 @@ def feu_a_proximite(grille: np.ndarray, ligne: int, colonne: int, rayon: int) ->
     return bool(np.any(fenetre == FEU))
 
 
-def valider_action(etat, action, budget):
+def valider_action(etat: dict, action: tuple[str, int, int], budget: int) -> str | None:
     """Renvoie None si l'action est permise, sinon un message expliquant la raison du refus."""
     if not (isinstance(action, tuple) and len(action) == 3):
         return f"action mal formée : {action!r}"
@@ -55,4 +55,21 @@ def valider_action(etat, action, budget):
         if not maison_intacte:
             return f"case ({ligne}, {colonne}) : aucune habitation intacte"
     return None
+
+
+def appliquer_action(etat: dict, action: tuple[str, int, int]) -> None:
+    """Applique une action supposée valide. Modifie etat en place."""
+    nom, ligne, colonne = action
+    if nom == "parefeu":
+        etat["vegetation"][ligne, colonne] = PAREFEU
+        etat["grille"][ligne, colonne] = VIDE
+    elif nom == "eau":
+        l0, c0 = max(ligne - 1, 0), max(colonne - 1, 0)
+        zone = etat["humidite"][l0:ligne + 2, c0:colonne + 2]
+        zone[:] = np.maximum(zone, REGLES["eau"]["humidite"])
+    elif nom == "contre_feu":
+        etat["grille"][ligne, colonne] = FEU
+    elif nom == "protection":
+        etat["protection"][ligne, colonne] = REGLES["protection"]["duree"]
+
 
