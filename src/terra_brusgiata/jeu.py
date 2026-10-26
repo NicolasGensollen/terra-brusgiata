@@ -23,4 +23,36 @@ def feu_a_proximite(grille: np.ndarray, ligne: int, colonne: int, rayon: int) ->
     return bool(np.any(fenetre == FEU))
 
 
+def valider_action(etat, action, budget):
+    """Renvoie None si l'action est permise, sinon un message expliquant la raison du refus."""
+    if not (isinstance(action, tuple) and len(action) == 3):
+        return f"action mal formée : {action!r}"
+    nom, ligne, colonne = action
+    if nom not in REGLES:
+        return f"action inconnue : {nom!r}"
+    grille, vegetation = etat["grille"], etat["vegetation"]
+    hauteur, largeur = grille.shape
+    if not (0 <= ligne < hauteur and 0 <= colonne < largeur):
+        return f"case ({ligne}, {colonne}) hors de la carte"
+    if etat["tour"] < DELAI_INTERVENTION:
+        return f"aucune intervention avant le tour {DELAI_INTERVENTION}"
+    cout = REGLES[nom]["cout"]
+    if cout > budget:
+        return f"budget insuffisant ({budget} restant, {cout} nécessaires)"
+    if nom in ("parefeu", "contre_feu"):
+        if grille[ligne, colonne] != ARBRE:
+            return f"case ({ligne}, {colonne}) non combustible ou déjà touchée"
+        if vegetation[ligne, colonne] == HABITATION:
+            return f"case ({ligne}, {colonne}) : action interdite sur une habitation"
+    if nom == "parefeu":
+        if feu_a_proximite(grille, ligne, colonne, DISTANCE_SECURITE):
+            return f"case ({ligne}, {colonne}) trop proche du feu"
+    if nom == "protection":
+        maison_intacte = (
+            vegetation[ligne, colonne] == HABITATION
+            and grille[ligne, colonne] == ARBRE
+        )
+        if not maison_intacte:
+            return f"case ({ligne}, {colonne}) : aucune habitation intacte"
+    return None
 
