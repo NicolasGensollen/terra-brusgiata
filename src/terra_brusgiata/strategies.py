@@ -29,3 +29,15 @@ def arroser_devant(etat: dict, budget: int, tour: int) -> Strategie:
     return [("eau", int(round(ligne + 3 * vy)), int(round(colonne + 3 * vx)))]
 
 
+def parefeux_devant(etat: dict, budget: int, tour: int) -> Strategie:
+    """Creuse des pare-feux à la distance de sécurité, en commençant par les
+    cases les plus en aval du vent."""
+    grille = etat["grille"]
+    anneau = zone_autour_du_feu(grille, 3) & ~zone_autour_du_feu(grille, 2)
+    anneau &= (grille == ARBRE) & (etat["vegetation"] != HABITATION)
+    cases = np.argwhere(anneau)
+    vy, vx = etat["vent"]
+    cases = cases[np.argsort(-(cases @ np.array([vy, vx])))]
+    n = min(MAX_ACTIONS_PAR_TOUR, budget)
+    return [("parefeu", int(l), int(c)) for l, c in cases[:n]]
+
