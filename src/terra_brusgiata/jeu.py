@@ -1,6 +1,6 @@
 import numpy as np
  
-from foret import ARBRE, FEU, HABITATION, PAREFEU, VIDE
+from .foret import ARBRE, FEU, HABITATION, PAREFEU, VIDE
  
 
 REGLES = {
