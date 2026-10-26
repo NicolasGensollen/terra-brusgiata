@@ -1,0 +1,10 @@
+{
+  "titre": "Feu de maquis au-dessus d'Ajaccio, vent d'ouest",
+  "carte": "golfe_ajaccio.txt",
+  "foyers": [[45, 60]],
+  "vent": {"angle": 0, "force": 0.5},
+  "p_base": 0.6,
+  "budget": 100,
+  "max_tours": 1000,
+  "graine": 1
+}
