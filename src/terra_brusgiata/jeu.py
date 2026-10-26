@@ -1,6 +1,8 @@
 import copy
 import numpy as np
- 
+
+from collections import Counter
+
 from .foret import ARBRE, FEU, HABITATION, PAREFEU, VIDE, etape
  
 
@@ -131,4 +133,13 @@ def jouer(
         resultat["budgets"].append(budget)
     resultat["budget_restant"] = budget
     return resultat
+
+
+def resumer_journal(resultat: dict) -> None:
+    """Affiche le nombre d'actions acceptées par type et de refus par raison."""
+    acceptees = Counter(a[0] for _, a, m in resultat["journal"] if m == "ok")
+    refus = Counter(m for _, a, m in resultat["journal"] if m != "ok")
+    print("Actions acceptées :", dict(acceptees))
+    for raison, nombre in refus.most_common():
+        print(f"  {nombre:4} refus : {raison}")
 
