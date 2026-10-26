@@ -143,3 +143,13 @@ def resumer_journal(resultat: dict) -> None:
     for raison, nombre in refus.most_common():
         print(f"  {nombre:4} refus : {raison}")
 
+
+def score(etat: dict) -> int:
+    """Points des cases encore intactes : 1 par case de végétation,
+    POIDS_HABITATION par case d'habitation."""
+    intact = etat["grille"] == ARBRE
+    maisons = etat["vegetation"] == HABITATION
+    return int(np.count_nonzero(intact & ~maisons)
+               + POIDS_HABITATION * np.count_nonzero(intact & maisons))
+
+
