@@ -28,3 +28,26 @@ def charger_scenario(chemin: str) -> tuple[dict, dict]:
     return etat, parametres
 
 
+def jouer_scenario(chemin: str, strategie):
+     """Joue un scénario avec une stratégie et avec la stratégie de référence."""
+     etat, parametres = charger_scenario(chemin)
+     reference = copy.deepcopy(etat)
+
+     def partie(etat_depart, strat):
+         rng = np.random.default_rng(parametres["graine"])
+         return jouer(
+             etat_depart,
+             strat,
+             rng,
+             parametres["budget"],
+             parametres["p_base"],
+             parametres["max_tours"]
+         )
+
+     resultat = partie(etat, strategie)
+     partie(reference, ne_rien_faire)
+     resultat["score"] = score(etat)
+     resultat["score_reference"] = score(reference)
+     resultat["gain"] = resultat["score"] - resultat["score_reference"]
+     resultat["etat_final"] = etat
+     return resultat
