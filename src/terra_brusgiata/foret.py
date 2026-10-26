@@ -124,13 +124,14 @@ def creer_etat(grille: np.ndarray) -> dict:
     """
     return {
         "grille": grille,
-        "humidite": np.zeros(grille.shape),           # sol parfaitement sec partout
-        "vent": (0.0, 0.0),                           # pas de direction de vent
-        "force_vent": 0.0,                            # vent nul
+        "humidite": np.zeros(grille.shape),              # sol parfaitement sec partout
+        "vent": (0.0, 0.0),                              # pas de direction de vent
+        "force_vent": 0.0,                               # vent nul
         "vegetation": np.full(grille.shape, FORET),
-        "altitude": np.zeros(grille.shape),           # terrain plat
+        "altitude": np.zeros(grille.shape),              # terrain plat
         "taille_case": 1.0,
-        "tour": 0,                                    # la simulation n'a pas commencé
+        "protection": np.zeros(grille.shape, dtype=int),
+        "tour": 0,                                       # la simulation n'a pas commencé
     }
 
 
@@ -149,7 +150,11 @@ def etape(etat: dict, rng, p_base: float = 0.6) -> None:
         for vl, vc in voisins(l, c, hauteur, largeur):
             # grille[...] == ARBRE : la cible était un arbre au début du tour
             # nouvelle[...] == ARBRE : pas déjà enflammée pendant ce tour
-            if grille[vl, vc] == ARBRE and nouvelle[vl, vc] == ARBRE:
+            if (
+                grille[vl, vc] == ARBRE and 
+                nouvelle[vl, vc] == ARBRE and 
+                etat["protection"][vl, vc] == 0
+            ):
                 dy, dx = vl - l, vc - c
                 facteur_vent = 1 + f * (dy * vy + dx * vx)
                 p = p_base * (1 - etat["humidite"][vl, vc])
