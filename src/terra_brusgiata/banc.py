@@ -41,3 +41,37 @@ def jouer_partie(etat_depart: dict, parametres: dict, strategie: Strategie, grai
     }
 
 
+def evaluer(strategie: Strategie, scenarios: dict, graines: list[int], references: dict):
+    """Joue la stratégie sur chaque scénario et chaque graine. 
+
+    Renvoie une liste de dictionnaires, un par partie, avec les clés :
+        - "scenario"
+        - "graine"
+        - "score"
+        - "reference"
+        - "gain"
+        - "tours"
+        - "duree".
+    """
+    lignes = []
+    for nom, (etat_depart, parametres) in scenarios.items():
+        for graine in graines:
+            if (nom, graine) not in references:
+                partie = jouer_partie(etat_depart, parametres, ne_rien_faire, graine)
+                references[(nom, graine)] = partie["score"]
+            partie = jouer_partie(etat_depart, parametres, strategie, graine)
+            reference = references[(nom, graine)]
+            lignes.append(
+                {
+                    "scenario": nom,
+                    "graine": graine,
+                    "score": partie["score"], 
+                    "reference": reference,
+                    "gain": partie["score"] - reference,
+                    "tours": partie["tours"], 
+                    "duree": partie["duree"]
+                }
+            )
+    return lignes
+
+

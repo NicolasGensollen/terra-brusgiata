@@ -1,0 +1,10 @@
+{
+  "titre": "Deux départs de feu simultanés, vent du sud",
+  "carte": "golfe_ajaccio.txt",
+  "foyers": [[28, 84], [70, 37]],
+  "vent": {"angle": 90, "force": 0.4},
+  "p_base": 0.6,
+  "budget": 100,
+  "max_tours": 1000,
+  "graine": 1
+}
