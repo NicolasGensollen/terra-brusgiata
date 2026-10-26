@@ -1,6 +1,6 @@
 import numpy as np
  
-from .foret import ARBRE, FEU, HABITATION
+from .foret import ARBRE, FEU, HABITATION, PAREFEU
 from .jeu import MAX_ACTIONS_PAR_TOUR, REGLES, zone_autour_du_feu, Strategie
 
 
@@ -40,4 +40,28 @@ def parefeux_devant(etat: dict, budget: int, tour: int) -> Strategie:
     cases = cases[np.argsort(-(cases @ np.array([vy, vx])))]
     n = min(MAX_ACTIONS_PAR_TOUR, budget)
     return [("parefeu", int(l), int(c)) for l, c in cases[:n]]
+
+
+def contre_feu_devant(etat: dict, budget: int, tour: int) -> Strategie:
+    """Allume un contre-feu à 3 cases devant la case en feu la plus avancée."""
+    feux = np.argwhere(etat["grille"] == FEU)
+    vy, vx = etat["vent"]
+    ligne, colonne = feux[np.argmax(feux @ np.array([vy, vx]))]
+    return [("contre_feu", int(round(ligne + 3 * vy)), int(round(colonne + 3 * vx)))]
+
+
+def contre_feu_adosse(etat: dict, budget: int, tour: int) -> Strategie:
+    """Creuse des pare-feux devant le front, puis allume des contre-feux
+    entre le front et ces pare-feux."""
+    grille, vegetation = etat["grille"], etat["vegetation"]
+    vy, vx = etat["vent"]
+    dl, dc = int(round(vy)), int(round(vx))     # une case vers l'aval
+    pare = np.pad(vegetation == PAREFEU, 1)
+    pare_en_aval = pare[1 + dl:pare.shape[0] - 1 + dl, 1 + dc:pare.shape[1] - 1 + dc]
+    cibles = np.argwhere(pare_en_aval & (grille == ARBRE) & (vegetation != HABITATION)
+                         & zone_autour_du_feu(grille, 3))
+    actions = [("contre_feu", int(l), int(c)) for l, c in cibles[:2]]
+    reste = MAX_ACTIONS_PAR_TOUR - len(actions)
+    actions += parefeux_devant(etat, budget - len(actions), tour)[:reste]
+    return actions
 
