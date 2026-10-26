@@ -22,7 +22,8 @@ COULEURS_TYPES = np.array([
 ])
 COULEUR_FEU = np.array([1.0, 0.48, 0.0])
 COULEUR_CENDRE = np.array([0.15, 0.15, 0.15])
- 
+COULEUR_EAU_LARGUEE = np.array([0.25, 0.55, 1.0])
+
  
 def dessiner(ax, grille, titre : str =""):
     """Dessine une grille dans des axes existants et renvoie l'image."""
@@ -159,4 +160,37 @@ def afficher_relief(altitude, titre="Relief"):
     ax.set_title(titre)
     fig.colorbar(image, ax=ax, label="altitude (m)")
     plt.show()
+
+
+def image_partie(resultat: dict, i: int) -> np.ndarray:
+    """Image du tour i d'une partie : terrain, feu, pare-feux et eau larguée."""
+    image = image_terrain(resultat["historique"][i], resultat["vegetations"][i])
+    eau = resultat["humidites"][i] - resultat["humidites"][0]     # humidité ajoutée
+    opacite = np.clip(eau, 0, 1)[:, :, np.newaxis] * 0.7
+    return (1 - opacite) * image + opacite * COULEUR_EAU_LARGUEE
+
+
+def animer_partie(resultat: dict, altitude: np.ndarray | None = None, intervalle: int = 50):
+    """Rejoue une partie : feu, pare-feux, eau larguée et budget restant."""
+    fig, ax = plt.subplots(figsize=(9, 6))
+    image = dessiner_terrain(
+        ax,
+        resultat["historique"][0],
+        resultat["vegetations"][0],
+        "",
+        altitude
+    )
+    image.set_data(image_partie(resultat, 0))
+    legende_terrain(ax)
+    fig.tight_layout()
+
+    def mise_a_jour(i):
+        image.set_data(image_partie(resultat, i))
+        ax.set_title(f"Tour {i}  —  budget restant : {resultat['budgets'][i]}")
+        return [image]
+
+    animation = FuncAnimation(fig, mise_a_jour, frames=len(resultat["historique"]),
+                              interval=intervalle, repeat=False)
+    plt.show()
+    return animation
 
