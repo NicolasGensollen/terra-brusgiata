@@ -15,3 +15,12 @@ DISTANCE_SECURITE = 3        # distance minimale au feu pour creuser un pare-feu
 EVAPORATION = 0.1            # part de l'humidité ajoutée évaporée à chaque tour
 POIDS_HABITATION = 20
 
+
+def feu_a_proximite(grille: np.ndarray, ligne: int, colonne: int, rayon: int) -> bool:
+    """Vrai s'il y a une case en feu à moins de rayon cases, diagonales comprises."""
+    fenetre = grille[max(ligne - rayon + 1, 0):ligne + rayon,
+                     max(colonne - rayon + 1, 0):colonne + rayon]
+    return bool(np.any(fenetre == FEU))
+
+
+
