@@ -19,3 +19,13 @@ def proteger_maisons(etat: dict, budget: int, tour: int) -> Strategie:
         for l, c in np.argwhere(a_proteger)[:n]
     ]
 
+
+def arroser_devant(etat: dict, budget: int, tour: int) -> Strategie:
+    """Arrose la zone située juste devant le point du feu le plus avancé
+    dans le sens du vent."""
+    feux = np.argwhere(etat["grille"] == FEU)
+    vy, vx = etat["vent"]
+    ligne, colonne = feux[np.argmax(feux @ np.array([vy, vx]))]
+    return [("eau", int(round(ligne + 3 * vy)), int(round(colonne + 3 * vx)))]
+
+
