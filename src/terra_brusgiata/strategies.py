@@ -1,7 +1,7 @@
 import numpy as np
  
 from .foret import ARBRE, FEU, HABITATION, PAREFEU
-from .jeu import MAX_ACTIONS_PAR_TOUR, REGLES, zone_autour_du_feu, Strategie
+from .jeu import DELAI_INTERVENTION, MAX_ACTIONS_PAR_TOUR, REGLES, zone_autour_du_feu, Strategie
 
 
 def proteger_maisons(etat: dict, budget: int, tour: int) -> Strategie:
@@ -64,4 +64,40 @@ def contre_feu_adosse(etat: dict, budget: int, tour: int) -> Strategie:
     reste = MAX_ACTIONS_PAR_TOUR - len(actions)
     actions += parefeux_devant(etat, budget - len(actions), tour)[:reste]
     return actions
+
+
+def fabrique_parefeux(distance: int) -> Strategie:
+    """Fabrique une stratégie qui creuse des pare-feux à exactement distance
+    cases du feu, en commençant par les cases les plus en aval du vent."""
+
+    def strategie(etat, budget, tour):
+        grille = etat["grille"]
+        anneau = (
+            zone_autour_du_feu(grille, distance) &
+            ~zone_autour_du_feu(grille, distance - 1)
+        )
+        anneau &= (grille == ARBRE) & (etat["vegetation"] != HABITATION)
+        cases = np.argwhere(anneau)
+        vy, vx = etat["vent"]
+        cases = cases[np.argsort(-(cases @ np.array([vy, vx])))]
+        n = min(MAX_ACTIONS_PAR_TOUR, budget)
+        return [("parefeu", int(l), int(c)) for l, c in cases[:n]]
+
+    return strategie
+
+
+def fabrique_arrosage(avance: int) -> Strategie:
+    """Fabrique une stratégie qui arrose à avance cases devant la case du feu
+    la plus avancée dans le sens du vent."""
+
+    def strategie(etat, budget, tour):
+        feux = np.argwhere(etat["grille"] == FEU)
+        vy, vx = etat["vent"]
+        ligne, colonne = feux[np.argmax(feux @ np.array([vy, vx]))]
+        return [
+            ("eau", int(round(ligne + avance * vy)), int(round(colonne + avance * vx)))
+        ]
+
+    return strategie
+
 
