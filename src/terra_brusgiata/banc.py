@@ -118,3 +118,30 @@ def resumer(lignes: list[dict]) -> None:
             f"{s['ecart_type']:>12.0f}{ic:>22}"
         )
 
+
+def comparer(lignes_a: list[dict], lignes_b: list[dict]) -> tuple[dict, dict]:
+    """Compare deux stratégies évaluées sur les mêmes scénarios et les mêmes graines. 
+
+    Renvoie deux dictionnaires de statistiques sur la différence des gains : 
+    la comparaison appariée, puis la comparaison non appariée.
+    """
+    gains_b = {
+        (l["scenario"], l["graine"]): l["gain"] for l in lignes_b
+    }
+    differences = [
+        l["gain"] - gains_b[(l["scenario"], l["graine"])] for l in lignes_a
+    ]
+    appariee = statistiques(differences)
+    sa = statistiques([l["gain"] for l in lignes_a])
+    sb = statistiques([l["gain"] for l in lignes_b])
+    erreur = math.sqrt(sa["erreur_type"] ** 2 + sb["erreur_type"] ** 2)
+    moyenne = sa["moyenne"] - sb["moyenne"]
+    non_appariee = {
+        "moyenne": moyenne,
+        "erreur_type": erreur,
+        "ic_bas": moyenne - 1.96 * erreur,
+        "ic_haut": moyenne + 1.96 * erreur
+    }
+    return appariee, non_appariee
+
+
