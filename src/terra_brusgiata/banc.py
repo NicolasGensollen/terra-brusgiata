@@ -2,6 +2,7 @@ import copy
 import os
 import time
 import csv
+import math
 
 import numpy as np
  
@@ -82,4 +83,21 @@ def exporter_csv(lignes: list[dict], chemin: str) -> None:
         ecrivain = csv.DictWriter(fichier, fieldnames=list(lignes[0].keys()))
         ecrivain.writeheader()
         ecrivain.writerows(lignes)
+
+
+def statistiques(valeurs: list[float]) -> dict:
+    """Moyenne, écart-type, erreur-type et intervalle de confiance à 95 %."""
+    valeurs = np.asarray(valeurs, dtype=float)
+    n = len(valeurs)
+    moyenne = float(np.mean(valeurs))
+    ecart_type = float(np.std(valeurs, ddof=1)) if n > 1 else 0.0
+    erreur = ecart_type / math.sqrt(n)
+    return {
+        "n": n,
+        "moyenne": moyenne,
+        "ecart_type": ecart_type,
+        "erreur_type": erreur,
+        "ic_bas": moyenne - 1.96 * erreur,
+        "ic_haut": moyenne + 1.96 * erreur
+    }
 
