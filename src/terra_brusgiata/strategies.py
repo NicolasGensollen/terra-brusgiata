@@ -101,3 +101,26 @@ def fabrique_arrosage(avance: int) -> Strategie:
     return strategie
 
 
+def fabrique_mixte(budget_eau: float) -> Strategie:
+    """Fabrique une stratégie qui consacre jusqu'à budget_eau unités à arroser
+    le front, et le reste à creuser des pare-feux."""
+    arrosage = fabrique_arrosage(0)
+    parefeux = fabrique_parefeux(3)
+    memoire = {"eau": 0}                     # budget déjà dépensé en eau
+
+    def strategie(etat, budget, tour):
+        if tour == 0:                        # nouvelle partie
+            memoire["eau"] = 0
+        if tour < DELAI_INTERVENTION:
+            return []
+        actions = []
+        cout = REGLES["eau"]["cout"]
+        if memoire["eau"] + cout <= budget_eau and cout <= budget:
+            actions += arrosage(etat, budget, tour)
+            memoire["eau"] += cout
+            budget -= cout
+        actions += parefeux(etat, budget, tour)
+        return actions[:MAX_ACTIONS_PAR_TOUR]
+ 
+    return strategie
+
