@@ -101,3 +101,20 @@ def statistiques(valeurs: list[float]) -> dict:
         "ic_haut": moyenne + 1.96 * erreur
     }
 
+
+def resumer(lignes: list[dict]) -> None:
+    """Affiche les statistiques du gain par scénario, puis sur l'ensemble."""
+    noms = sorted({ligne["scenario"] for ligne in lignes})
+    print(
+        f"{'scénario':<14}{'n':>5}{'gain moyen':>12}{'écart-type':>12}"
+        f"{'IC 95 %':>22}"
+    )
+    for nom in noms + ["TOTAL"]:
+        gains = [l["gain"] for l in lignes if nom in ("TOTAL", l["scenario"])]
+        s = statistiques(gains)
+        ic = f"[{s['ic_bas']:.0f} ; {s['ic_haut']:.0f}]"
+        print(
+            f"{nom:<14}{s['n']:>5}{s['moyenne']:>12.0f}"
+            f"{s['ecart_type']:>12.0f}{ic:>22}"
+        )
+
