@@ -145,3 +145,18 @@ def comparer(lignes_a: list[dict], lignes_b: list[dict]) -> tuple[dict, dict]:
     return appariee, non_appariee
 
 
+def chronometrer(strategie):
+    """Renvoie (strategie_chronometree, durees) : une stratégie qui se comporte
+    exactement comme strategie, mais qui ajoute à la liste durees la durée de
+    chacun de ses appels."""
+    durees = []
+
+    def strategie_chronometree(etat, budget, tour):
+        debut = time.perf_counter()
+        actions = strategie(etat, budget, tour)
+        durees.append(time.perf_counter() - debut)
+        return actions
+
+    return strategie_chronometree, durees
+
+
